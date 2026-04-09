@@ -1,0 +1,5 @@
+{
+  "name": "Facial Analysis Studio",
+  "description": "Professional-grade facial landmark detection and analysis tool using MediaPipe and Gemini AI.",
+  "requestFramePermissions": ["camera"]
+}

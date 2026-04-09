@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account information and settings.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique user ID from Firebase Auth." },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "settings": {
+          "type": "object",
+          "properties": {
+            "theme": { "type": "string", "enum": ["light", "dark"] },
+            "units": { "type": "string", "enum": ["metric", "imperial"] }
+          }
+        }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "FacialAnalysis": {
+      "title": "FacialAnalysis",
+      "description": "A single facial analysis report.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The owner of this analysis." },
+        "name": { "type": "string", "description": "User-defined name for the analysis." },
+        "imageBase64": { "type": "string", "description": "Base64 encoded portrait image." },
+        "landmarks": { "type": "array", "description": "468-point landmark data." },
+        "analysisResult": { "type": "object", "description": "Gemini AI aesthetic scores & measurements." },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "imageBase64", "landmarks", "analysisResult", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents."
+    },
+    "/analyses/{analysisId}": {
+      "schema": "FacialAnalysis",
+      "description": "Facial analysis reports."
+    }
+  }
+}
