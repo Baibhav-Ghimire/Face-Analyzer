@@ -45,9 +45,14 @@ export interface FacialAnalysis {
   recommendations: string[];
 }
 
-export async function analyzeFaceWithAI(base64Image: string): Promise<FacialAnalysis> {
+export async function analyzeFaceWithAI(base64Image: string, landmarks?: any[]): Promise<FacialAnalysis> {
   // Remove data:image/jpeg;base64, prefix if present
   const base64Data = base64Image.split(',')[1] || base64Image;
+
+  // Prepare landmarks context if available
+  const landmarksContext = landmarks && landmarks.length > 0 
+    ? `\nFACIAL LANDMARK DATA (468 points, 3D coordinates):\n${JSON.stringify(landmarks.map(l => ({ x: l.x.toFixed(4), y: l.y.toFixed(4), z: l.z.toFixed(4) })))}`
+    : '';
 
   const response = await ai.models.generateContent({
     model: "gemini-3.1-pro-preview",
@@ -61,11 +66,21 @@ export async function analyzeFaceWithAI(base64Image: string): Promise<FacialAnal
             },
           },
           {
-            text: `Perform a professional cephalometric and aesthetic facial analysis. 
-            Provide detailed ratings and measurements in a structured JSON format. 
-            Focus on symmetry, feature proportions, and skin health.
-            Include specific metrics like Canthal Tilt, Midface Ratio, Gonial Angle, and Zonal Skin Analysis.
-            Be objective and clinical in tone. Use Qoves-style terminology.`,
+            text: `Perform a rigorous, high-precision cephalometric and aesthetic facial analysis. 
+            ${landmarksContext}
+            
+            CRITICAL INSTRUCTIONS:
+            1. UNIQUE RATINGS: Do NOT provide generic or "safe" scores. Every face is unique. Use the full 1-100 scale with high variance. A score of 85 should be significantly different from an 82.
+            2. MATHEMATICAL RIGOR: Base all ratings on strict mathematical proportions and the provided 3D landmark coordinates for sub-millimeter precision:
+               - The Golden Ratio (phi)
+               - The Rule of Thirds (vertical facial divisions)
+               - The Rule of Fifths (horizontal eye/nose spacing)
+               - Specific angles (Gonial angle, Canthal tilt, Nasolabial angle)
+            3. OBJECTIVE CRITIQUE: Be clinical and highly critical. Identify even minor asymmetries or deviations from ideal aesthetic markers.
+            4. TERMINOLOGY: Use advanced Qoves-style terminology (e.g., "infraorbital rim support", "maxillary recession", "bizygomatic width").
+            5. DIFFERENTIATION: Ensure that subtle differences in jawline definition, eye spacing, or skin texture result in distinct numerical ratings.
+            
+            Provide detailed ratings and measurements in a structured JSON format.`,
           },
         ],
       },

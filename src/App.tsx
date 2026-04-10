@@ -59,7 +59,7 @@ function Dashboard() {
     if (!currentImage || !user) return;
     setIsAiAnalyzing(true);
     try {
-      const data = await analyzeFaceWithAI(currentImage);
+      const data = await analyzeFaceWithAI(currentImage, currentLandmarks);
       setAnalysisData(data);
       
       // Persist to Firestore
